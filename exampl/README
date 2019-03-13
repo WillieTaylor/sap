@@ -1,0 +1,4 @@
+set a symbolic link called "home" to the source directory
+eg
+
+ln -s .. home
