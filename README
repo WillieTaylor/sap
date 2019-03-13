@@ -1,0 +1,72 @@
+Compile-lines for each program are at the top of their source file.
+
+
+simple sap run
+
+./sap prot1.pdb prot2.pdb
+
+Finds the best match of CA positions in prot1 with prot2 and calculates a superposition.
+Takes only the first chain in each file.   The superposed sstructure are written in the
+file super.pdb with the residue-level similarity score in the B-value (temperature factor)
+field.   Best viewed in Rasmol with "colour temperature".   Matched residues are linked
+by dashed lines (encoded by CONECT lines in super.pdb).   The file plot.rms has the RMS
+values for increasing sets of residues ranked by their residue-level score. (Similar but
+better than the equivalent CASP plots).
+
+NB:
+
+If the filenames are identical (ie sap prot1.pdb prot1.pdb), then sap calculates the
+best internal (off-diagonal) match and not the trivial 1-to-1 solution.   Useful when
+looking for internal duplication.
+
+if the proteins are large, the internal stack memory may overflow.  To avoid this type
+"unlimit stacksize" in the shell before any sap runs.
+
+
+ungapped sap run
+
+./sap121 prot1.pdb prot2.pdb
+ 
+As above but adds a high weight to the digonal.
+
+
+RMS superposition
+
+./superWrms move.pdb stay.pdb cutoff other.pdb
+
+Takes two pdb files of equal lenght and calculates their RMS superposition using the
+product of their B-values as a weight.   If these have been set as 1 or 0 then where the
+values are both one in the the files will determine the region of superposition.
+A cutoff can be applied.   An additional pdb file can be specified which is rotated and
+written instead of move.pdb in the output file rot.pdb.   other.pdb is typically a copy
+of move.pdb with extra stuff such as small molecules of other subunits.   This can all
+be done automatically with the script:
+
+tcsh super.csh move.pdb stay.pdb 
+
+With cutoff=0 and both files combined in supall.pdb
+
+A variant of this script takes its inputfile from a sap run as:
+
+tcsh super+sap.csh move.pdb stay.pdb cutoff
+
+The value of the cutoff is now applied to the residue-level sap score to select the
+residues to superpose with their scores being applied as a superposition weight.
+Useful for homologous proteins with a common core.   For close homologues, cutoff=10
+is a good number.  If unspecified, the cutoff is set to the average residue score.
+NB: This script selects only the chains labelled "A" from each file. 
+
+
+All atom superposition
+
+All the above base their superpositions on CA atoms.   The following variants use all
+atoms which is useful to guide the superposition on sidechains or ligands.
+
+./smallWrms move.cas stay.cas cutoff
+
+There are no scrips to run this so you will need to edit the B-values of the pdb files.
+
+
+Example
+
+In the "test" directory, two nicotinic receptors are superposed
